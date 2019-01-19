@@ -1,0 +1,65 @@
+---
+title: "Analysis of Variance in Life Expectancies Between States of USA"
+output: 
+  html_document:
+    fig_height: 20
+    fig_width: 28
+  pdf_document:
+    fig_height: 2.8
+    fig_width: 7
+  word_document:
+    fig_height: 4
+    fig_width: 6
+---
+
+
+```{r, include=FALSE}
+# Don't delete this chunk if you are using the mosaic package
+# This loads the mosaic and dplyr packages
+require(mosaic)
+options(digits=5)
+```
+
+```{r, include=FALSE}
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+# This changes the default colors in lattice plots.
+trellis.par.set(theme=theme.mosaic())  
+
+# knitr settings to control how R chunks work.
+require(knitr)
+opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small"    # slightly smaller font for code
+)
+```
+
+
+
+
+##  Analysis of variance
+
+```{r}
+lf_df = read.csv("life_expectancy_data.csv")
+bwplot(Life.Expectancy ~ State, data=lf_df)
+```
+
+
+```{r}
+favstats(Life.Expectancy ~ State, data=lf_df)
+```
+
+```{r}
+aovmod = aov(Life.Expectancy ~ State, data=lf_df)
+summary(aovmod)
+```
+
+```{r tuk, dev='svg', fig.width=15, fig.height=15, out.width='600px'}
+tuk = TukeyHSD(aovmod)
+plot(tuk)
+#axis(side=1, cey.axis=0.3)
+tukey_results = as.data.frame(tuk[1:1])
+write.csv(tukey_results, 'tukey_results.csv')
+```
+
+
